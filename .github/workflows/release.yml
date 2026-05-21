@@ -54,10 +54,13 @@ jobs:
       - name: Install Tauri CLI
         run: cargo install tauri-cli --version "^2.0"
 
+      - name: Build frontend
+        run: npm run build 2>&1
+
       - name: Build Tauri app
         run: |
-          npm run build
-          npm run tauri build 2>&1
+          # Run tauri build with empty beforeBuildCommand (we already built frontend)
+          npx tauri build --config '{"build":{"beforeBuildCommand":""}}' 2>&1
         shell: bash
 
       - name: Upload Linux artifact
@@ -91,10 +94,12 @@ jobs:
       - name: Install Tauri CLI
         run: cargo install tauri-cli --version "^2.0"
 
+      - name: Build frontend
+        run: npm run build 2>&1
+
       - name: Build Tauri app
         run: |
-          npm run build
-          npm run tauri build 2>&1
+          npx tauri build --config '{"build":{"beforeBuildCommand":""}}' 2>&1
 
       - name: Upload macOS artifact
         uses: actions/upload-artifact@v4
@@ -127,10 +132,12 @@ jobs:
       - name: Install Tauri CLI
         run: cargo install tauri-cli --version "^2.0"
 
+      - name: Build frontend
+        run: npm run build 2>&1
+
       - name: Build Tauri app
         run: |
-          npm run build
-          npm run tauri build 2>&1
+          npx tauri build --config '{"build":{"beforeBuildCommand":""}}' 2>&1
 
       - name: Upload Windows artifact
         uses: actions/upload-artifact@v4
