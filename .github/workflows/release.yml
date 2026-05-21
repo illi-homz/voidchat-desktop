@@ -54,12 +54,14 @@ jobs:
       - name: Install Tauri CLI
         run: cargo install tauri-cli --version "^2.0"
 
+      - name: Check tsc
+        run: npx tsc --noEmit 2>&1
+
       - name: Build frontend
-        run: npm run build 2>&1
+        run: npx vite build 2>&1
 
       - name: Build Tauri app
         run: |
-          # Run tauri build with empty beforeBuildCommand (we already built frontend)
           npx tauri build --config '{"build":{"beforeBuildCommand":""}}' 2>&1
         shell: bash
 
@@ -94,8 +96,11 @@ jobs:
       - name: Install Tauri CLI
         run: cargo install tauri-cli --version "^2.0"
 
+      - name: Check tsc
+        run: npx tsc --noEmit 2>&1
+
       - name: Build frontend
-        run: npm run build 2>&1
+        run: npx vite build 2>&1
 
       - name: Build Tauri app
         run: |
@@ -132,8 +137,11 @@ jobs:
       - name: Install Tauri CLI
         run: cargo install tauri-cli --version "^2.0"
 
+      - name: Check tsc
+        run: npx tsc --noEmit 2>&1
+
       - name: Build frontend
-        run: npm run build 2>&1
+        run: npx vite build 2>&1
 
       - name: Build Tauri app
         run: |
