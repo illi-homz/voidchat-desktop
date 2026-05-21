@@ -55,9 +55,7 @@ jobs:
         run: cargo install tauri-cli --version "^2.0"
 
       - name: Build frontend
-        run: |
-          echo "=== VITE BUILD OUTPUT ===" && npx vite build 2>&1; EXIT_CODE=$?; echo "=== EXIT CODE: $EXIT_CODE ==="; if [ $EXIT_CODE -ne 0 ]; then echo "=== VITE DEBUG OUTPUT ===" && npx vite build --debug 2>&1 || true; fi; exit $EXIT_CODE
-        shell: bash
+        run: npx vite build 2>&1
 
       - name: Build Tauri app
         run: |

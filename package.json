@@ -28,6 +28,10 @@
     "uuid": "^14.0.0",
     "qrcode": "^1.5.4"
   },
+  "optionalDependencies": {
+    "lightningcss-linux-x64-gnu": "1.32.0",
+    "lightningcss-win32-x64-msvc": "1.32.0"
+  },
   "devDependencies": {
     "@tailwindcss/vite": "^4.1.0",
     "@tauri-apps/cli": "^2.0.0",
