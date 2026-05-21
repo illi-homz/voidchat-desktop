@@ -245,7 +245,7 @@ class WebRTCService {
         const offer = await this.peerConnection?.createOffer({
           offerToReceiveAudio: true,
         });
-        if (offer) {
+        if (offer?.sdp) {
           await this.peerConnection?.setLocalDescription(offer);
           socketService.sendCallOffer(
             this.targetUserId,
