@@ -54,11 +54,19 @@ jobs:
       - name: Install Tauri CLI
         run: cargo install tauri-cli --version "^2.0"
 
+      - name: Debug native modules
+        run: |
+          node -e "try{console.log('lightningcss:',require.resolve('lightningcss'))}catch(e){console.log('lightningcss FAILED:',e.message)}"
+          ls node_modules/lightningcss-linux-x64-gnu/ 2>/dev/null || echo "no linux binary"
+          ls node_modules/.pnpm/ 2>/dev/null | head -5 || true
+          node --version
+          npm --version
+
       - name: Check tsc
         run: npx tsc --noEmit 2>&1
 
       - name: Build frontend
-        run: npx vite build 2>&1
+        run: npm run build 2>&1
 
       - name: Build Tauri app
         run: |
@@ -99,8 +107,13 @@ jobs:
       - name: Check tsc
         run: npx tsc --noEmit 2>&1
 
+      - name: Debug native modules
+        run: |
+          node -e "try{console.log('lightningcss:',require.resolve('lightningcss'))}catch(e){console.log('lightningcss FAILED:',e.message)}"
+          node --version
+
       - name: Build frontend
-        run: npx vite build 2>&1
+        run: npm run build 2>&1
 
       - name: Build Tauri app
         run: |
@@ -140,8 +153,13 @@ jobs:
       - name: Check tsc
         run: npx tsc --noEmit 2>&1
 
+      - name: Debug native modules
+        run: |
+          node -e "try{console.log('lightningcss:',require.resolve('lightningcss'))}catch(e){console.log('lightningcss FAILED:',e.message)}"
+          node --version
+
       - name: Build frontend
-        run: npx vite build 2>&1
+        run: npm run build 2>&1
 
       - name: Build Tauri app
         run: |
