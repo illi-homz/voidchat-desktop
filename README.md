@@ -1,195 +1,227 @@
-# VoidChat Desktop
+# VoidChat Desktop 🦜
 
-> E2E encrypted messenger — desktop client for Windows, Linux, and macOS.
+> **Шифруем всё, лодки не жгём!**
+> E2E-защифрованный мессенджер для Windows, Linux и macOS.
 
-Built with **Tauri v2 + React + TypeScript**. Binary size ~8 MB, RAM usage ~60 MB.
+Собран на **Tauri v2 + React + TypeScript**. Весит ~8 МБ, жрёт ~60 МБ RAM.
+Ваш десктоп даже не заметит — будет чавкать и радоваться.
 
-## Tech Stack
+---
 
-| Layer | Technology |
-|---|---|
-| Framework | **Tauri v2** (Rust backend + OS WebView) |
-| Frontend | **React 19 + TypeScript** |
-| Build tool | **Vite 6** |
-| Styling | **Tailwind CSS 4** |
-| State | **Zustand 5** (persist middleware) |
-| Routing | **React Router v7** |
-| Socket | **socket.io-client v4** |
-| Crypto | **tweetnacl** (X25519 + XSalsa20-Poly1305) |
-| WebRTC | Native browser APIs (RTCPeerConnection) |
-| QR | **qrcode** library |
+## 🎪 Оглавление (чтобы не заблудиться в трюме)
 
-## Project Structure
+- [Что внутри?](#-что-внутри)
+- [Как это собрано](#-как-это-собрано-стек)
+- [Настройка и запуск](#-разработка)
+- [Сборка под пиратские флаги](#-сборка)
+- [Чё умеет](#-фичи)
+- [Почему Tauri, а не Электрон?](#-архитектурные-решения)
+- [Известные баги (сорян)](#-известные-ограничения)
+
+---
+
+## 📂 Что внутри?
 
 ```
-voidchat-desktop/
+voidchat-desktop/          # ← тут живёт магия
 ├── src/
-│   ├── main.tsx              # React entry point
-│   ├── App.tsx               # Root component + routing
-│   ├── index.css             # Global styles + Tailwind + theme
-│   ├── vite-env.d.ts
-│   ├── types/
-│   │   ├── index.ts          # Domain types, call types, utilities
-│   │   └── socket-events.ts  # Typed Socket.IO events
-│   ├── constants.ts          # App-wide constants
-│   ├── services/
-│   │   ├── crypto.ts         # E2E encryption (tweetnacl)
-│   │   ├── socket.ts         # Socket.IO client service
-│   │   └── WebRTCService.ts  # WebRTC peer connection manager
-│   ├── stores/
-│   │   ├── index.ts          # Store re-exports
-│   │   ├── serverStore.ts    # Multi-server management
-│   │   ├── authStore.ts      # User keys & authentication
-│   │   ├── contactsStore.ts  # Contacts & presence
-│   │   ├── chatStore.ts      # Messages & unread counts
-│   │   ├── callStore.ts      # Call state & history
-│   │   └── notificationStore.ts  # Toasts & incoming call
-│   ├── components/
-│   │   ├── Layout.tsx         # Page layout wrapper
-│   │   ├── PageHeader.tsx     # Page title + back button
-│   │   ├── BackButton.tsx     # Navigation back
-│   │   ├── ContactItem.tsx    # Contact row in list
-│   │   ├── CallButton.tsx     # Voice call button
-│   │   ├── EmptyState.tsx     # Empty list placeholder
-│   │   ├── Modal.tsx          # Reusable modal dialog
-│   │   ├── ConfirmAlert.tsx   # Confirmation dialog
-│   │   ├── Toast.tsx          # Toast notification system
-│   │   ├── NotificationBanner.tsx  # Message notification
-│   │   └── IncomingCallBanner.tsx  # Incoming call UI
-│   └── pages/
-│       ├── WelcomePage.tsx    # Server list / first launch
-│       ├── AddServerPage.tsx  # Add new server form
-│       ├── HomePage.tsx       # Main screen (contacts list)
-│       ├── AddFriendPage.tsx  # Send friend request
-│       ├── ShareIdPage.tsx    # Share your user ID + QR
-│       ├── ChatPage.tsx       # E2E encrypted chat
-│       └── CallPage.tsx       # Full-screen call UI
-├── src-tauri/
-│   ├── src/
-│   │   ├── lib.rs            # Tauri app setup + plugins
-│   │   └── main.rs           # Entry point
-│   ├── Cargo.toml            # Rust dependencies
-│   ├── build.rs              # Tauri build script
-│   ├── tauri.conf.json       # Tauri configuration
-│   ├── capabilities/
-│   │   └── default.json      # Permissions
-│   └── icons/                # App icons
-├── package.json
-├── vite.config.ts
-├── tsconfig.json
-├── index.html
-└── .gitignore
+│   ├── main.tsx           # Входная дверь (React)
+│   ├── App.tsx            # Диспетчерская (роутинг)
+│   ├── index.css          # Причепуриться (стили)
+│   ├── types/             # Описания типов (чтобы TS не бухтел)
+│   ├── constants.ts       # Циферки-константки
+│   ├── services/          # Мозги приложения
+│   │   ├── crypto.ts      # Шифровальная машинка tweetnacl
+│   │   ├── socket.ts      # Свисток Socket.IO
+│   │   └── WebRTCService.ts  # Телефонная трубка WebRTC
+│   ├── stores/            # Кладовки с состоянием (Zustand)
+│   ├── components/        # Кубики-кирпичики
+│   └── pages/             # Странички-экраны
+├── src-tauri/             # Ржавый движок (Rust)
+├── .github/workflows/     # CI/CD магия
+└── scripts/               # Всякие плюшки
 ```
 
-## Development
+---
 
-### Prerequisites
+## 🛠 Как это собрано (стек)
 
-- **Node.js** >= 22.11.0
-- **Rust** >= 1.75 (install via `curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh`)
-- **Tauri CLI**: `cargo install tauri-cli --version "^2.0"`
+| Слой | Технология | Почему это круто |
+|---|---|---|
+| 🏗 **Каркас** | **Tauri v2** | Ржавый бэкенд + веб-морда, 8 МБ, а не 200 |
+| ⚛️ **Морда** | **React 19 + TypeScript** | Компонентный подход, типы, рай |
+| ⚡ **Сборщик** | **Vite 6** | Горячая перезагрузка — глазом моргнуть не успеешь |
+| 🎨 **Стили** | **Tailwind CSS 4** | Красиво и быстро, тёмная тема по умолчанию |
+| 📦 **Стейт** | **Zustand 5** | Лёгкий, персистент, без бойлерплейта |
+| 🗺 **Маршруты** | **React Router v7** | Куда нажал — туда пришёл |
+| 📡 **Сокеты** | **socket.io-client** | Реалтайм, мать его |
+| 🔐 **Крипта** | **tweetnacl** | X25519 + XSalsa20-Poly1305 — хакерам шансов нет |
+| 📞 **Звонки** | Нативный WebRTC | P2P, сервер не подслушивает |
+| 📱 **QR-коды** | **qrcode** | Делись ID красиво |
 
-### Setup
+---
+
+## 🚀 Разработка
+
+### Что нужно на берегу
+
+| Инструмент | Версия | Где взять |
+|---|---|---|
+| **Node.js** | >= 22.11.0 | `nvm install 22` |
+| **Rust** | >= 1.75 | `curl https://sh.rustup.rs \| sh` |
+| **Tauri CLI** | ^2.0 | `cargo install tauri-cli --version "^2.0"` |
+
+Если чего-то нет — терминал обидится, но мы не сдадимся.
+
+### Ставим плюшки
 
 ```bash
 cd voidchat-desktop
-npm install
+npm install  # можно идти пить чай
 ```
 
-### Run (development mode)
+### Запуск в песочнице (dev mode)
 
 ```bash
 npm run tauri dev
 ```
 
-This starts Vite dev server on port 1420 and opens the Tauri window.
+Откроется окошко 390×844 — как андроид, только на компе.
+Vite сервер на порту 1420, горячая перезагрузка, красота.
 
-### Build (production)
+### Ещё команды
+
+```bash
+npm run dev        # Только веб-морда (без окошка)
+npm run build      # Транспиляция TS + сборка Vite
+npm run tauri      # Любая команда Tauri
+npm run lint       # ESLint — выгоняет баги
+npm run format     # Prettier — причёсывает код
+```
+
+---
+
+## 📦 Сборка
+
+Берём и собираем под все три флага:
 
 ```bash
 npm run tauri build
 ```
 
-Builds the app and creates platform-specific installers:
-- **Windows**: `.msi` / `.exe`
-- **macOS**: `.dmg` / `.app`
-- **Linux**: `.AppImage` / `.deb`
+На выходе получаем:
 
-Output in `src-tauri/target/release/bundle/`.
+| Платформа | Файлик |
+|---|---|
+| 🪟 **Windows** | `.msi` / `.exe` |
+| 🍏 **macOS** | `.dmg` / `.app` |
+| 🐧 **Linux** | `.AppImage` / `.deb` |
 
-### Available scripts
+Всё лежит в `src-tauri/target/release/bundle/`.
+
+### Автоматическая сборка на GitHub
+
+Пушнули тег `v*` — GitHub Actions сам собирает под все три платформы:
 
 ```bash
-npm run dev        # Vite dev server only (no Tauri window)
-npm run build      # TypeScript check + Vite production build
-npm run tauri      # Run any Tauri CLI command
-npm run lint       # ESLint
-npm run format     # Prettier
+git tag -a "v1.0.0" -m "release v1.0.0"
+git push --follow-tags
 ```
 
-## Features
+Через 20-30 минут в **Releases** на GitHub лежат готовые установщики.
+Это как пиццу заказать, только полезнее.
 
-### Multi-Server
+---
 
-Add multiple VoidChat servers. Each server has its own:
-- User identity (keypair)
-- Contacts list
-- Message history
-- Unread counts
+## 🎯 Фичи
 
-Switch between servers from the Home screen header.
+### 🗄 Multi-Server
 
-### E2E Encryption
+Добавляй сколько хочешь VoidChat-серверов. У каждого свои:
+- 🆔 Айдишник и ключики
+- 👥 Контакты
+- 💬 История чатов
+- 🔴 Непрочитанные сообщения
 
-- **Algorithm:** X25519 key exchange + XSalsa20-Poly1305 symmetric encryption
-- **Library:** tweetnacl (pure JS, no native deps)
-- **Keys:** Keypair generated per-server, private key never leaves the device
-- **Compatible:** Binary-compatible with VoidChat mobile (React Native) client
+Переключайся между серверами из шапки экрана — как пульт от телика.
 
-### Voice Calls
+### 🔒 E2E-шифрование
 
-- **Protocol:** WebRTC P2P (audio only, Opus 32kbps + RED/FEC)
-- **Signaling:** Socket.IO relay (server never sees media)
-- **STUN:** Google public STUN servers
-- **TURN:** Optional coturn server (fetched from server on connect)
-- **ICE restart:** Automatic renegotiation on connection drop
+Никто не прочитает твои сообщения. Даже мы. Даже сервер. Даже ЦРУ (ну, почти).
 
-### Message Queuing
+| Параметр | Значение |
+|---|---|
+| 🔑 **Алгоритм** | X25519 (обмен ключами) + XSalsa20-Poly1305 (шифрование) |
+| 📚 **Библиотека** | tweetnacl — чистый JS, без нативных зависимостей |
+| 🗝 **Ключи** | Генерируются на клиенте, приватный ключ никогда не покидает устройство |
+| 🤝 **Совместимость** | Полная бинарная совместимость с VoidChat под Android/iOS |
 
-- Offline messages are queued on the server and delivered on next connection
-- Pending friend requests are also queued
+Зашифровал на десктопе — расшифровал на мобилке. Магия.
 
-## Architecture Decisions
+### 📞 Голосовые звонки
 
-### Why Tauri instead of Electron?
+P2P, только аудио, никакого видео (пока). Opus 32kbps + RED/FEC — голос звучит чисто.
 
-| Criteria | Tauri | Electron |
+| Что | Как |
+|---|---|
+| 🧊 **STUN** | Google Public STUN — пробой NAT |
+| 🏰 **TURN** | Опциональный coturn сервер — если NAT лютый |
+| 🔄 **ICE restart** | Автоматическое переподключение если связь упала |
+| 🚦 **Сигнализация** | Через Socket.IO — сервер только relay, медиа идёт P2P |
+
+### 📬 Офлайн-сообщения
+
+Ушёл в офлайн? Сообщения подождут в очереди на сервере и придут при следующем подключении. Запросы в друзья — тоже.
+
+---
+
+## 🏛 Архитектурные решения
+
+### 🤔 Почему Tauri, а не Electron?
+
+| Параметр | Tauri 🦀 | Electron 🐘 |
 |---|---|---|
-| Binary size | ~8 MB | ~150-250 MB |
-| RAM usage | ~60 MB | ~200-500 MB |
-| Performance | Native WebView | Chromium |
-| Security | Sandboxed by default | Full Node access |
-| Cross-platform | Win/Linux/Mac | Win/Linux/Mac |
+| 📦 **Вес установщика** | **~8 МБ** | ~150-250 МБ |
+| 🐏 **Память** | **~60 МБ** | ~200-500 МБ |
+| ⚡ **Производительность** | Нативный WebView (Chromium) | Свой Chromium |
+| 🛡 **Безопасность** | Песочница по умолчанию | Полный доступ к Node |
+| 🖥 **Платформы** | Win/Linux/Mac | Win/Linux/Mac |
 
-### Why Zustand instead of MobX?
+Tauri — это как спортивный болид, Electron — как грузовик с полным баком.
 
-- Zustand is lighter (~2 KB vs ~15 KB)
-- No decorators/annotations needed
-- Built-in `persist` middleware for localStorage
-- Works seamlessly with React hooks
-- Familiar patterns for React Native developers
+### 🤔 Почему Zustand, а не MobX?
 
-## Compatibility
+- Zustand весит **2 КБ** против **15 КБ** у MobX
+- Не нужны декораторы — чистые хуки
+- Встроенный `persist` для localStorage
+- Работает из коробки с React, без плясок с бубном
 
-- **Server:** Tested with voidchat-server v1.2.0+
-- **Mobile:** Fully compatible with VoidChatApp (React Native)
-- **Desktop platforms:** Windows 10+, macOS 12+, Linux (Ubuntu 20.04+)
+---
 
-## Known Limitations
+## 🤝 Совместимость
 
-- [ ] `IncomingCallBanner` component is a placeholder (TODO)
-- [ ] `NotificationBanner` component is a placeholder (TODO)
-- [ ] Speaker toggle in CallPage is UI-only (no native audio routing)
-- [ ] No tray/minimize-to-tray support yet
-- [ ] No auto-start on system boot
-- [ ] No keyboard shortcuts (Ctrl+K search, etc.)
+- **Сервер:** voidchat-server v1.2.0+ (наш же)
+- **Мобилка:** VoidChatApp (React Native) — шифруемся туда-обратно
+- **Платформы:** Windows 10+, macOS 12+, Ubuntu 20.04+
+
+---
+
+## 🐛 Известные ограничения
+
+- [ ] 🚫 **IncomingCallBanner** — заглушка, звонок надо принимать с CallPage
+- [ ] 🚫 **NotificationBanner** — заглушка, всплывающие уведомления не готовы
+- [ ] 🔊 **Speaker toggle** — кнопка есть, но переключает только иконку (надо нативный API)
+- [ ] 🗑 **Tray** — в трей сворачивать пока не умеет
+- [ ] ⏰ **Автозапуск** — при старте системы не запускается
+- [ ] ⌨ **Хоткеи** — Ctrl+K поиск, Ctrl+Enter отправить — TODO
+
+---
+
+## 🦜 Лицензия
+
+Пиратский код. Бери, используй, форкай. Только про автора не забудь (да и хрен с ним, главное — пользуйся).
+
+---
+
+**VoidChat** — чат, который не читает твои сообщения.
+Мы серьёзно. Даже если очень хочется.
