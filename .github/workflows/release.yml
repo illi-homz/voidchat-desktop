@@ -51,14 +51,6 @@ jobs:
       - name: Install Tauri CLI
         run: cargo install tauri-cli --version "^2.0"
 
-      - name: Debug node
-        run: |
-          node --version
-          npm --version
-          node -e "console.log(require.resolve('vite'))"
-          ls node_modules/.bin/vite 2>/dev/null || echo "no vite bin"
-          npx tsc --version 2>&1
-
       - name: Build frontend
         run: npm run build 2>&1
 
@@ -132,12 +124,6 @@ jobs:
 
       - name: Install Tauri CLI
         run: cargo install tauri-cli --version "^2.0"
-
-      - name: Debug node
-        run: |
-          node --version
-          npm --version
-          node -e "console.log('vite:', require.resolve('vite'))"
 
       - name: Build frontend
         run: npm run build 2>&1
