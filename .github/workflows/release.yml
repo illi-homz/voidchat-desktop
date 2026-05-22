@@ -43,23 +43,84 @@ jobs:
             libcairo2-dev \
             libpango1.0-dev \
             libatk1.0-dev \
-            libgdk-pixbuf-2.0-dev \
-            libssl-dev \
-            libxdo-dev \
-            build-essential
+            libgdk-pixbuf-2.0-dev
 
       - name: Install JS dependencies
-        run: npm ci --include=optional
+        run: npm ci
 
       - name: Install Tauri CLI
         run: cargo install tauri-cli --version "^2.0"
 
-      - name: Build frontend
-        run: npm run build 2>&1
+      - name: Build Tauri app
+        run: npx tauri build
+
+      - name: Upload Linux artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: voidchat-linux
+          path: src-tauri/target/release/bundle/
+
+  build-macos:
+    name: Build macOS
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.11.0
+          cache: 'npm'
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install JS dependencies
+        run: npm ci
+
+      - name: Install Tauri CLI
+        run: cargo install tauri-cli --version "^2.0"
 
       - name: Build Tauri app
-        run: |
-          npx tauri build --config '{"build":{"beforeBuildCommand":""}}' 2>&1
+        run: npx tauri build
+
+      - name: Upload macOS artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: voidchat-macos
+          path: src-tauri/target/release/bundle/
+
+  build-windows:
+    name: Build Windows
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.11.0
+          cache: 'npm'
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install JS dependencies
+        run: npm ci
+
+      - name: Install Tauri CLI
+        run: cargo install tauri-cli --version "^2.0"
+
+      - name: Build Tauri app
+        run: npx tauri build
 
       - name: Upload Windows artifact
         uses: actions/upload-artifact@v4
