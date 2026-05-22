@@ -143,7 +143,7 @@ npm run tauri build
 npm run release   # одной командой
 ```
 
-→ https://github.com/illi-homz/voidchat-desktop/releases
+→ раздел **Releases** на GitHub
 
 ---
 
@@ -157,7 +157,7 @@ http://example.com     # OK
 https://example.com    # только если есть HTTPS
 ```
 
-Подробнее про сервер: https://github.com/illi-homz/voidchat-desktop -> AGENTS.md
+Подробнее про сервер — в `AGENTS.md` проекта
 
 ---
 
