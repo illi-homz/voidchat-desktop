@@ -1,6 +1,6 @@
 {
   "productName": "VoidChat",
-  "version": "0.1.0",
+  "version": "0.1.25",
   "identifier": "com.voidchat.desktop",
   "build": {
     "frontendDist": "../dist",
