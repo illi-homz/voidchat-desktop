@@ -139,7 +139,7 @@ jobs:
     name: Create Release
     needs: [build-linux, build-macos, build-windows]
     runs-on: ubuntu-latest
-    if: always()
+    if: success()
 
     steps:
       - name: Download all artifacts
@@ -152,9 +152,9 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            voidchat-linux/**/*
-            voidchat-macos/**/*
-            voidchat-windows/**/*
+            voidchat-linux/*
+            voidchat-macos/*
+            voidchat-windows/*
           generate_release_notes: true
           fail_on_unmatched_files: false
           draft: true
