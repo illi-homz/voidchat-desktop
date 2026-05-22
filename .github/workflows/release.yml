@@ -172,6 +172,6 @@ jobs:
             voidchat-windows/msi/*.msi
           token: ${{ secrets.GITHUB_TOKEN }}
           generateReleaseNotes: true
-          draft: true
+          draft: false
           tag: ${{ github.ref_name }}
           omitBodyDuringUpdate: true
