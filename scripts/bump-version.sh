@@ -64,5 +64,13 @@ git commit -m "chore: bump version to $NEW_VERSION"
 git tag -a "v$NEW_VERSION" -m "release v$NEW_VERSION"
 
 echo ""
-echo "Version bumped to $NEW_VERSION"
-echo "Run 'git push --follow-tags' to trigger the release pipeline"
+echo "⬆️  Pushing to remote..."
+if git push --follow-tags 2>&1; then
+	echo ""
+	echo "✅ Version $NEW_VERSION released!"
+	echo "   https://github.com/illi-homz/voidchat-desktop/actions"
+	echo "   https://github.com/illi-homz/voidchat-desktop/releases"
+else
+	echo "⚠️  Tag created locally but push failed."
+	echo "   Run manually: git push --follow-tags"
+fi
