@@ -23,7 +23,7 @@ export function AddServerPage() {
 
     let normalizedUrl = url.trim();
     if (!normalizedUrl.startsWith('http://') && !normalizedUrl.startsWith('https://')) {
-      normalizedUrl = `https://${normalizedUrl}`;
+      normalizedUrl = `http://${normalizedUrl}`;
     }
     normalizedUrl = normalizedUrl.replace(/\/$/, '');
 
