@@ -40,7 +40,8 @@ jobs:
             libsoup-3.0-dev \
             libjavascriptcoregtk-4.1-dev \
             libssl-dev \
-            libc++-dev
+            libc++-dev \
+            dpkg
 
       - name: Install JS deps
         run: |
@@ -165,7 +166,8 @@ jobs:
           allowUpdates: true
           artifactErrorsFailBuild: false
           artifacts: |
-            voidchat-linux/appimage/*.AppImage
+            voidchat-linux/**/*.AppImage
+            voidchat-linux/**/*.deb
             voidchat-macos/dmg/*.dmg
             voidchat-windows/msi/*.msi
           token: ${{ secrets.GITHUB_TOKEN }}
