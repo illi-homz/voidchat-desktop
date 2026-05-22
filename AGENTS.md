@@ -1,227 +1,123 @@
 # VoidChat Desktop — AGENTS.md 🦜
 
 > Десктопный клиент VoidChat — E2E-зашифрованный мессенджер.
-> Не дай прочитать свои секреты никому. Даже себе (ну, почти).
-
-**Платформы:** Windows, Linux, macOS (Tauri v2).
+> **Платформы:** Windows, Linux, macOS (Tauri v2).
 
 ---
 
-## 🏃‍♂️ Быстрый старт
+## 🚀 Релиз одной командой
 
 ```bash
-npm install              # Завариваем чай, ставим зависимости
-npm run dev              # Vite сервер на порту 1420
-npm run tauri dev        # Vite + Tauri окошко (как надо!)
-npm run tauri build      # Сборка под все платформы
-npm run lint             # ESLint — вычесываем блох
-npm run format           # Prettier — причесываем код
+npm run release         # 0.x.y → 0.x.y+1 + tag + push → CI → Releases
+npm run release:patch   # явно patch
+npm run release:minor   # явно minor
+npm run release:major   # явно major
 ```
+
+Скрипт (`scripts/bump-version.sh`):
+1. Инкрементит версию в `package.json` + `src-tauri/tauri.conf.json`
+2. Создаёт аннотированный git tag `vX.Y.Z`
+3. Пушит в GitHub → Actions собирает Win/Mac/Linux → публикует в Releases
 
 ---
 
 ## 🏗 Архитектура
 
-### 📚 Стек технологий
+### Стек
 
-| Технология | Версия | Зачем |
-|---|---|---|
-| 🦀 **Tauri v2** | ^2.0 | Ржавый бэкенд + хромовая морда |
-| ⚛️ **React** | 19 | Компонентный подход |
-| 📘 **TypeScript** | 5.8 | Чтобы баги не прятались |
-| ⚡ **Vite** | 6 | Быстро, очень быстро |
-| 🎨 **Tailwind CSS 4** | 4.1 | Красиво, темно, уютно |
-| 📦 **Zustand** | 5 | Стейт-менеджмент на минималках |
-| 🗺 **React Router** | 7 | Куда тыкнул — туда пришёл |
-| 📡 **socket.io-client** | 4.8 | Реалтайм-свисток |
-| 🔐 **tweetnacl** | 1.0 | Шифровальная машинка |
-| 📱 **qrcode** | 1.5 | QR-коды, красивости |
-
-### 🪟 Окно приложения
-
-| Параметр | Значение |
+| Технология | Зачем |
 |---|---|
-| 📐 **Размер по умолчанию** | 390×844 (как Android) |
-| 📏 **Минимальный размер** | 360×600 |
-| 🔄 **Ресайз** | Можно растягивать |
-| 🎯 **Появление** | По центру экрана |
-| 🎭 **Тема** | Тёмная (белого не ждите) |
+| 🦀 **Tauri v2** | Ржавый бэкенд + хромовая морда, 8 МБ |
+| ⚛️ **React 19 + TS** | Компоненты |
+| ⚡ **Vite 6** | Быстрый сборщик |
+| 🎨 **Tailwind CSS 4** | Тёмная тема, CSS-переменные |
+| 📦 **Zustand 5** | Стейт с persist в localStorage |
+| 🗺 **React Router 7** | 7 страниц-маршрутов |
+| 📡 **socket.io-client 4** | Вебсокеты |
+| 🔐 **tweetnacl** | X25519 + XSalsa20-Poly1305 |
+| 📞 **WebRTC** | P2P аудиозвонки |
 
-### 🎨 Цветовая гамма
+### Окно
 
-Всё в CSS-переменных, тёмная тема по уши:
-
-```
---color-bg:          #0D1117    (космический черный)
---color-surface:     #1C2128    (мокрый асфальт)
---color-primary:     #F0C040    (золотой пиастр)
---color-error:       #F85149    (красная тревога)
---color-success:     #3FB950    (зеленый свет)
---color-text:        #F0F6FC    (белый, но не слепит)
-```
+- 390×844 (как Android), минимум 360×600
+- Ресайзится, центрируется
+- Тёмная тема (`--color-bg: #0D1117`)
 
 ---
 
 ## 📦 Сторы (Zustand)
 
-| Стор | Файл | Сохраняется? | Зачем |
+| Стор | Файл | Persist | Суть |
 |---|---|---|---|
-| 🗄 `useServerStore` | `serverStore.ts` | ✅ localStorage | Список серверов |
-| 🔑 `useAuthStore` | `authStore.ts` | ✅ localStorage | Ключи юзера |
-| 👥 `useContactsStore` | `contactsStore.ts` | ✅ localStorage | Контакты + кто онлайн |
-| 💬 `useChatStore` | `chatStore.ts` | ✅ localStorage | Сообщения + непрочитанное |
-| 📞 `useCallStore` | `callStore.ts` | ❌ Только пока звонок | Состояние звонка |
-| 🔔 `useNotificationStore` | `notificationStore.ts` | ❌ Только пока живёт | Тосты + входящий звонок |
+| 🗄 `useServerStore` | `serverStore.ts` | ✅ | Список серверов |
+| 🔑 `useAuthStore` | `authStore.ts` | ✅ | Ключи E2E по серверам |
+| 👥 `useContactsStore` | `contactsStore.ts` | ✅ | Контакты + онлайн |
+| 💬 `useChatStore` | `chatStore.ts` | ✅ | Сообщения + unread |
+| 📞 `useCallStore` | `callStore.ts` | ❌ | Состояние звонка |
+| 🔔 `useNotificationStore` | `notificationStore.ts` | ❌ | Тосты + входящий звонок |
 
 ---
 
 ## ⚙️ Сервисы
 
-### 📡 Socket-сервис (`socket.ts`)
+### 📡 Socket (`socket.ts`)
+- `connect(url, userId, publicKey)` → register + heartbeat
+- Буферизация событий до подписки
+- Переподключение (5 попыток)
+- TURN config fetch после registered
 
-Однорукого бандита не будет — здесь всё честно:
+### 🔐 Crypto (`crypto.ts`)
+- `generateKeyPair()` — X25519
+- `deriveSharedSecret(pub, priv)` — общий секрет
+- `encryptMessage(msg, secret)` / `decryptMessage(cipher, nonce, secret)`
+- **Полная совместимость** с VoidChat мобилкой
 
-- **Класс-одиночка** `SocketService` — один на всё приложение
-- **Система колбэков** с буферизацией — опоздал на событие? Не беда, буфер подождёт
-- **Пульс** каждые 30 секунд (heartbeat)
-- **Переподключение** до 5 попыток с задержкой 1-5 секунд
-- **TURN-конфиг** — подтягивается с сервера после подключения
-
-### 🔐 Крипто-сервис (`crypto.ts`)
-
-Тот же tweetnacl, что и в мобилке — **полная совместимость**:
-
-| Функция | Что делает |
-|---|---|
-| `generateKeyPair()` | Создаёт X25519 ключи |
-| `deriveSharedSecret(pub, priv)` | Вычисляет общий секрет |
-| `encryptMessage(msg, secret)` | Шифрует (XSalsa20-Poly1305) |
-| `decryptMessage(cipher, nonce, secret)` | Дешифрует |
-
-Зашифровал на десктопе — мобилка расшифрует. И наоборот. Магия, да.
-
-### 📞 WebRTC-сервис (`WebRTCService.ts`)
-
-Нативный браузерный WebRTC, без понтов:
-
-- `RTCPeerConnection` — мозг звонка
-- Буферизация ICE-кандидатов — пока remoteDescription не готов, кандидаты ждут в очереди
-- Автоматический ICE restart — если соединение упало
-- Поддержка TURN — если NAT не пускает
+### 📞 WebRTC (`WebRTCService.ts`)
+- Нативный браузерный `RTCPeerConnection`
+- Буферизация ICE-кандидатов
+- ICE restart при обрыве
+- TURN поддержка
 
 ---
 
 ## 📡 Socket.IO события
 
-Полный список с типами — `src/types/socket-events.ts`.
+### Client → Server
+register, heartbeat, get_presence, friend_request, friend_accept, friend_decline,
+message, messages_read, call_offer, call_accept, call_decline, call_hangup, ice_candidate
 
-### Клиент → Сервер (что шлём)
-
-```
-register, heartbeat, get_presence,
-friend_request, friend_accept, friend_decline,
-message, messages_read,
-call_offer, call_accept, call_decline, call_hangup,
-ice_candidate
-```
-
-### Сервер → Клиент (что получаем)
-
-```
-registered, error, kicked,
-presence, presence_batch,
-friend_request, friend_request_sent,
-friend_accepted, friend_confirmed, friend_declined,
-message, message_sent, message_failed, messages_read,
-call_incoming, call_offer_sent, call_accepted,
-call_declined, call_ended, call_timedout,
-ice_candidate
-```
+### Server → Client
+registered, error, kicked, presence, presence_batch, friend_request, friend_request_sent,
+friend_accepted, friend_confirmed, friend_declined, message, message_sent, message_failed,
+messages_read, call_incoming, call_offer_sent, call_accepted, call_declined, call_ended,
+call_timedout, ice_candidate
 
 ---
 
-## 🗺 Маршруты (роуты)
+## 🗺 Маршруты
 
-| Путь | Страница | Что там |
-|---|---|---|
-| `/` | **WelcomePage** | Выбор сервера / первый запуск |
-| `/home` | **HomePage** | Список контактов |
-| `/chat/:contactId` | **ChatPage** | E2E-чат с контактом |
-| `/add-server` | **AddServerPage** | Добавить сервер |
-| `/add-friend` | **AddFriendPage** | Отправить заявку в друзья |
-| `/share-id` | **ShareIdPage** | Показать QR + User ID |
-| `/call` | **CallPage** | Звонок (полный экран) |
-
----
-
-## 🗄 Изоляция данных между серверами
-
-Каждый сервер — свой мир:
-
-- 🆔 **Свои ключи** (userId + X25519 пара)
-- 👥 **Свои контакты**
-- 💬 **Свои сообщения** (префикс `{serverId}_{contactId}`)
-- 🔴 **Свои непрочитанные**
-
-Переключаешь сервер — переключаешь реальность. Почти.
-
----
-
-## 🔐 Криптосовместимость
-
-С мобильным VoidChat — **бинарная совместимость**:
-
-| Параметр | Значение |
+| Путь | Страница |
 |---|---|
-| 🔑 Обмен ключами | X25519 (`nacl.box.before`) |
-| 🔒 Шифрование | XSalsa20-Poly1305 (`nacl.secretbox`) |
-| 📝 Кодировка | Base64 (ключи, nonce, шифротекст) |
-| 🤝 Итог | Шифруй на компе — читай на телефоне |
+| `/` | WelcomePage — выбор сервера |
+| `/home` | HomePage — список контактов |
+| `/chat/:contactId` | ChatPage — E2E-чат |
+| `/add-server` | AddServerPage — добавить сервер |
+| `/add-friend` | AddFriendPage — добавить друга |
+| `/share-id` | ShareIdPage — QR + UserID |
+| `/call` | CallPage — звонок (fullscreen) |
 
 ---
 
-## 🚀 Релиз
+## 🐛 Известные баги
 
-### Вручную
-
-```bash
-npm run tauri build
-```
-
-### Через CI/CD (GitHub Actions)
-
-```bash
-npm run release:patch   # 0.1.0 → 0.1.1
-npm run release:minor   # 0.1.0 → 0.2.0
-npm run release:major   # 0.1.0 → 1.0.0
-
-git push --follow-tags  # CI сам соберёт под Win/Mac/Linux
-```
-
-### Что получим
-
-| Платформа | Формат |
-|---|---|
-| 🪟 Windows | `src-tauri/target/release/bundle/msi/*.msi` |
-| 🍏 macOS | `src-tauri/target/release/bundle/dmg/*.dmg` |
-| 🐧 Linux | `src-tauri/target/release/bundle/appimage/*.AppImage` |
+1. 🚫 **IncomingCallBanner** — заглушка
+2. 🚫 **NotificationBanner** — заглушка
+3. 🔊 **Speaker toggle** — UI без нативного API
+4. 🔕 **Pop-up уведомления** — нет в фоне
+5. 🔒 **HTTPS** — сервер без TLS, http://
 
 ---
 
-## 🐛 Известные баги (TODO)
+## 🦜 Философия
 
-1. 🚫 **IncomingCallBanner** — заглушка, звонок принимается только с CallPage
-2. 🚫 **NotificationBanner** — заглушка, всплывающие уведомления не работают
-3. 🔊 **Speaker toggle** — UI есть, реального переключения нет
-4. 🔕 **Pop-up уведомления** — когда приложение свёрнуто, не приходят
-5. 🔒 **HTTPS** — сервер без TLS, клиент использует http://. Нужно: настроить nginx + Let's Encrypt на сервере → переключить клиент на https://
-
----
-
-## 🦜 Философия проекта
-
-- **Приватность** — не обсуждается. E2E или ничего.
-- **Простота** — минимум кнопок, максимум дела.
-- **Совместимость** — десктоп, мобилка, сервер — всё вяжется в один узел.
-
-Вопросы? Баги? Идеи? 🦜
+**Приватность** — E2E или ничего. **Совместимость** — десктоп + мобилка + сервер.
