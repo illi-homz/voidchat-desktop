@@ -52,7 +52,16 @@ jobs:
         run: cargo install tauri-cli --version "^2.0"
 
       - name: Build frontend
-        run: npm run build 2>&1
+        run: |
+          echo "=== RUNNING TSC ==="
+          npx tsc --noEmit 2>&1
+          TSC_EXIT=$?
+          echo "TSC EXIT: $TSC_EXIT"
+          echo "=== RUNNING VITE ==="
+          npx vite build 2>&1
+          VITE_EXIT=$?
+          echo "VITE EXIT: $VITE_EXIT"
+          exit $((TSC_EXIT + VITE_EXIT))
 
       - name: Build Tauri app
         run: npx tauri build 2>&1
@@ -126,7 +135,8 @@ jobs:
         run: cargo install tauri-cli --version "^2.0"
 
       - name: Build frontend
-        run: npm run build 2>&1
+        run: |
+          echo "TSC:" && npx tsc --noEmit 2>&1 && echo "TSC OK" && echo "VITE:" && npx vite build 2>&1 && echo "VITE OK"
 
       - name: Build Tauri app
         run: npx tauri build 2>&1
