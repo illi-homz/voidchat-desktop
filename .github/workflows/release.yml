@@ -160,12 +160,16 @@ jobs:
           done
 
       - name: Upload artifacts to release
-        uses: softprops/action-gh-release@v2
+        uses: ncipollo/release-action@v1
         with:
-          files: |
-            voidchat-linux/**/*
-            voidchat-macos/**/*
-            voidchat-windows/**/*
-          generate_release_notes: true
-          fail_on_unmatched_files: false
+          allowUpdates: true
+          artifactErrorsFailBuild: false
+          artifacts: |
+            voidchat-linux/appimage/*.AppImage
+            voidchat-macos/dmg/*.dmg
+            voidchat-windows/msi/*.msi
+          token: ${{ secrets.GITHUB_TOKEN }}
+          generateReleaseNotes: true
           draft: true
+          tag: ${{ github.ref_name }}
+          omitBodyDuringUpdate: true
