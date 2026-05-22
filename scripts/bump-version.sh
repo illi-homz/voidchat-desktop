@@ -68,8 +68,8 @@ echo "⬆️  Pushing to remote..."
 if git push --follow-tags 2>&1; then
 	echo ""
 	echo "✅ Version $NEW_VERSION released!"
-	echo "   https://github.com/illi-homz/voidchat-desktop/actions"
-	echo "   https://github.com/illi-homz/voidchat-desktop/releases"
+	echo "   Actions: раздел Actions на GitHub"
+	echo "   Release: раздел Releases на GitHub"
 else
 	echo "⚠️  Tag created locally but push failed."
 	echo "   Run manually: git push --follow-tags"
