@@ -145,10 +145,21 @@ jobs:
       - name: Download all artifacts
         uses: actions/download-artifact@v4
 
-      - name: List files
-        run: find . -type f | head -50
+      - name: Find and list all release files
+        run: |
+          echo "=== All files ==="
+          find . -type f | sort
+          echo "=== Artifact dirs ==="
+          ls -d voidchat-* 2>/dev/null || echo "No artifact dirs found"
+          echo "=== Artifact contents ==="
+          for d in voidchat-*; do
+            if [ -d "$d" ]; then
+              echo "--- $d ---"
+              find "$d" -type f | head -20
+            fi
+          done
 
-      - name: Create Release
+      - name: Upload artifacts to release
         uses: softprops/action-gh-release@v2
         with:
           files: |
