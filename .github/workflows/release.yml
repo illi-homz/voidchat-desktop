@@ -45,7 +45,7 @@ jobs:
       - name: Install JS deps
         run: |
           npm install 2>&1
-          npm install @rollup/rollup-linux-x64-gnu @esbuild/linux-x64 2>&1
+          npm install @rollup/rollup-linux-x64-gnu @esbuild/linux-x64 @tauri-apps/cli-linux-x64-gnu 2>&1
 
       - name: Build frontend
         run: npm run build 2>&1
@@ -121,7 +121,7 @@ jobs:
       - name: Install JS deps
         run: |
           npm install 2>&1
-          npm install @rollup/rollup-win32-x64-msvc @esbuild/win32-x64 2>&1
+          npm install @rollup/rollup-win32-x64-msvc @esbuild/win32-x64 @tauri-apps/cli-win32-x64-msvc 2>&1
 
       - name: Build frontend
         run: npm run build 2>&1
