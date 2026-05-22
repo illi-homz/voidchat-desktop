@@ -30,7 +30,9 @@
   },
   "optionalDependencies": {
     "@esbuild/linux-x64": "0.25.12",
-    "@esbuild/win32-x64": "0.25.12"
+    "@esbuild/win32-x64": "0.25.12",
+    "@rollup/rollup-linux-x64-gnu": "4.60.4",
+    "@rollup/rollup-win32-x64-msvc": "4.60.4"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2.0.0",
